@@ -44,27 +44,23 @@ class Notifier(object):
             self.lock.release() 
     
     
-    def removeSubscribersForNotifier(self, notifier):
-        notifier.clean()
+    def __removeSubscribersForNotifier(self, notifier):
+        notifier.subscribers.clear()
 
 
     def removeSubscribersByEventName(self, eventName):
         self.lock.acquire()
         try:
-            self.notifiers[eventName].clean()
+            self.notifiers[eventName].subscribers.clear()
         finally:
             self.lock.release() 
-               
-               
-    def getNumberOfEventSubscribers(self, eventName):
-        return len(self.notifiers[eventName].subscribers)
-    
-    
+
+
     def removeAllSubscribers(self):
         self.lock.acquire()
         try:
-            for notifier in self.notifiers:
-                self.removeSubscribersForNotifier(notifier)
+            for key, notifier in self.notifiers.items():
+                self.__removeSubscribersForNotifier(notifier)
         finally:
             self.lock.release()
         
@@ -77,6 +73,6 @@ class Notifier(object):
                 self.notifiers[eventName].subscribers.append(subscriber)
                 self.logger.info(f"...OK")
             else:
-                self.logger.warning("Subscriber you are trying to add is registered already")
+                self.logger.warning("Subscriber you are trying to add was registered already")
         finally:
             self.lock.release()
