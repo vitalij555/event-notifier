@@ -24,6 +24,8 @@ jobs:
         pip install setuptools wheel twine
     - name: Run tests
       run: |
+        pip install pytest
+        pip install pytest-cov
         cd test
         pytest --cov=../src --cov-report=html
         cd ../
