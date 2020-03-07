@@ -10,8 +10,6 @@ from Notifier import Notifier
 @pytest.fixture(scope="class")  # scope="function" is default
 def logger():
     import logging
-    import time
-    import multiprocessing
 
     l = logging.getLogger("multiprocessing")
     h = logging.StreamHandler()
