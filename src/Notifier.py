@@ -21,7 +21,7 @@ class Notifier(object):
         for eventName in eventNames:
             self.logger.info(f"Registering event notifier: \"{eventName}\"")
             if(eventName in self.notifiers):
-                raise KeyError("Duplicating names in notifiers list input")
+                raise KeyError("Duplicating names in notifiers' list input")
             self.notifiers[eventName] = SubscriberManager();
 
 

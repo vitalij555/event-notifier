@@ -3,7 +3,8 @@ from unittest.mock import Mock
 
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
-sys.path.insert(1, '../src')
+if not '../src' in sys.path:
+    sys.path.insert(1, '../src')
 from SubscriberManager import SubscriberManager
 
 
