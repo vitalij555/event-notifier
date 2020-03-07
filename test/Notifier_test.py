@@ -38,12 +38,6 @@ def notifierWithoutLogger(logger):
 
 
 class TestNotifier:
-    # def setUpClass():
-    #     print("Wow called")
-    #
-    # def tearDownClass():
-    #     print("Wow teardown called...")
-
     def test_initialised_OK(self, notifier):
         assert 4 == len(notifier.notifiers)
         assert not notifier.lock.locked()
@@ -155,3 +149,83 @@ class TestNotifier:
         notifierWithoutLogger.fireEvent("onCreate", "event: onCreate 2222")
         onCreateCallback.assert_called_once_with("event: onCreate 2222")
 
+
+    def test_anyTypeAsEvent_OK(self):
+        class Box:
+            def __init__(self, name):
+                self.name = name
+
+        a = Box("keyBoxA")
+        b = Box("keyBoxB")
+        c = Box("keyBoxB")
+
+        notifier = Notifier(["onCreate", 5, 22.58, "onDelete", a, b])
+        onCreateCallback = Mock()
+        on5Callback      = Mock()
+        onFloatCallback  = Mock()
+        onBoxACallback   = Mock()
+        onBoxBCallback   = Mock()
+
+        notifier.addEventSubscriber("onCreate", onCreateCallback)
+        notifier.addEventSubscriber(5, on5Callback)
+        notifier.addEventSubscriber(22.58, onFloatCallback)
+        notifier.addEventSubscriber(a, onBoxACallback)
+        notifier.addEventSubscriber(b, onBoxBCallback)
+
+        onCreateCallback.assert_not_called()
+        on5Callback.assert_not_called()
+        onFloatCallback.assert_not_called()
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        notifier.fireEvent("onCreate", "event: onCreate !!!!")
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_not_called()
+        onFloatCallback.assert_not_called()
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        with pytest.raises(KeyError):
+            notifier.fireEvent(6, "event: !!!!! 6 !!!!")   # unknown event - KeyError raised
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_not_called()
+        onFloatCallback.assert_not_called()
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        notifier.fireEvent(5, "event: !!!!! 5 !!!!") # this one is registered - OK
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_called_once_with("event: !!!!! 5 !!!!")
+        onFloatCallback.assert_not_called()
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        with pytest.raises(KeyError):
+            notifier.fireEvent(22.59, "event: !!!!! 22.59 !!!!")  # unknown event - KeyError raised
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_called_once_with("event: !!!!! 5 !!!!")
+        onFloatCallback.assert_not_called()
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        notifier.fireEvent(22.58, "event: !!!!! 22.58 !!!!")  # this one is registered - OK
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_called_once_with("event: !!!!! 5 !!!!")
+        onFloatCallback.assert_called_once_with("event: !!!!! 22.58 !!!!")
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        with pytest.raises(KeyError):
+            notifier.fireEvent(c, "event: Box c with name like it is b")  # unknown event (object is known, name is the same, but object is still different) - KeyError raised
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_called_once_with("event: !!!!! 5 !!!!")
+        onFloatCallback.assert_called_once_with("event: !!!!! 22.58 !!!!")
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_not_called()
+
+        notifier.fireEvent(b, "event: Box b")
+        onCreateCallback.assert_called_once_with("event: onCreate !!!!")
+        on5Callback.assert_called_once_with("event: !!!!! 5 !!!!")
+        onFloatCallback.assert_called_once_with("event: !!!!! 22.58 !!!!")
+        onBoxACallback.assert_not_called()
+        onBoxBCallback.assert_called_once_with("event: Box b")
