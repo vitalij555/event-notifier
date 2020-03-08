@@ -31,7 +31,7 @@ jobs:
         pip install pytest
         pip install pytest-cov
         cd test
-        pytest --cov=../EventNotifier --cov-report=html .
+        pytest --cov=../event-notifier --cov-report=html
         cd ..
     - name: Build and publish
       env:
