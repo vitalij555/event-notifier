@@ -1,2 +1,4 @@
-from .Notifier import Notifier
-from .SubscriberManager import SubscriberManager
+from EventNotifier.SubscriberManager import SubscriberManager
+from EventNotifier.Notifier import Notifier
+
+
