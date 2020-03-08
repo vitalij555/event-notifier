@@ -29,7 +29,9 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        pytest --cov=./EventNotifier --cov-report=html ./test
+        cd test
+        pytest --cov=../EventNotifier --cov-report=html .
+        cd ..
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
