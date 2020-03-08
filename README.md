@@ -1,3 +1,5 @@
+![Upload Python Package](https://github.com/vitalij555/event-notifier/workflows/Upload%20Python%20Package/badge.svg)
+
 # event-notifier
 
 Simple python notifier.
