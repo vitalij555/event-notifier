@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
-if not '../EventNotifier' in sys.path:
-    sys.path.insert(1, '../EventNotifier')
-from SubscriberManager import SubscriberManager
+if not '../../event-notifier' in sys.path:
+    sys.path.insert(1, '../../event-notifier')
+from EventNotifier.SubscriberManager import SubscriberManager
 
 
 @pytest.fixture(scope="class")  # scope="function" is default
