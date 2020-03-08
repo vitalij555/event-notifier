@@ -8,7 +8,7 @@ setup(
   author = 'Vitalij Gotovskij',               # Type in your name
   author_email = 'vitalij@cdeveloper.eu',     # Type in your E-Mail
   url = 'https://github.com/vitalij555/event-notifier',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',
+  download_url = 'https://github.com/vitalij555/event-notifier/archive/v_01.tar.gz',
   keywords = ['EVENT', 'NOTIFY', 'SUBSCRIBE', "OBSERVER"],   # Keywords that define your package best
   classifiers=[
     'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
