@@ -4,7 +4,7 @@ Created on 2019-02-22
 @author: Vitalij Gotovskij (Lithuania) 
 '''
 
-from SubscriberManager import SubscriberManager
+from EventNotifier.SubscriberManager import SubscriberManager
 import threading
 import logging
 
