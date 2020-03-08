@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
-if not '../event-notifier' in sys.path:
-    sys.path.insert(1, '../event-notifier')
+if not '../EventNotifier' in sys.path:
+    sys.path.insert(1, '../EventNotifier')
 from Notifier import Notifier
 
 
