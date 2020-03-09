@@ -228,3 +228,14 @@ class TestNotifier:
         onFloatCallback.assert_called_once_with("event: !!!!! 22.58 !!!!")
         onBoxACallback.assert_not_called()
         onBoxBCallback.assert_called_once_with("event: Box b")
+
+
+    def test_notifySubscribersWithMultipleParams_OK(self, notifier):
+        onModifyCallback = Mock()
+
+        notifier.addEventSubscriber("onModify", onModifyCallback)
+
+        onModifyCallback.assert_not_called()
+
+        notifier.fireEvent("onModify", "some text", 25, 16.99, named1 = "named param value", named2 = 25)
+        onModifyCallback.assert_called_once_with("some text", 25, 16.99, named1 = "named param value", named2 = 25)

@@ -11,6 +11,8 @@ Simple python notifier.
 - [Usage](#usage)
 - [Constructor](#constructor)
 - [Available Functions](#available-functions)
+- [Tests](#tests)
+- [License](#license)
 - [Contributing](#contributing)
 
 ## Background
@@ -28,9 +30,8 @@ pip install event-notifier
 
 ```python
 import Notifier
-
-
 ```
+
 TBD
 Example taken from the internet showing how to mark it down inside .md file:
 The `emit()` function takes three arguments: 
@@ -42,7 +43,9 @@ The function returns a request object. If your event has a `sync` subscription a
 
 ## Constructor
 
-TBD
+```python
+addEventSubscriber(eventName, subscriber)
+```
 
 **Parameters**
 
@@ -62,7 +65,10 @@ notifier = Notifier(["onCreate", "onOpen", "onModify", "onDelete"])
 ```
 
 ## Available Functions
-TBD
+
+```python
+addEventSubscriber(eventName, subscriber)
+```
 
 ### some Function Name here
 
@@ -83,6 +89,32 @@ Utility to print the current configuration.
 ```python
 #TBD
 ```
+
+## Tests
+
+[PyTest][pytest] is used for tests. Python 2 is not supported.
+
+**Install PyTest**
+
+```sh
+$ pip install pytest
+```
+
+**Run tests**
+
+```sh
+$ py.test test/*
+```
+
+[pytest]: http://pytest.org/
+
+
+## License
+
+License
+Copyright (C) 2020 Vitalij Gotovskij
+
+event-notifier binaries and source code can be used according to the MIT License
 
 
 ## Contribute

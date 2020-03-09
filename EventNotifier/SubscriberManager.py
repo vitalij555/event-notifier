@@ -10,6 +10,6 @@ class SubscriberManager(object):
         self.subscribers = []
         
         
-    def notify(self, event):
+    def notify(self, *args, **kwargs):
         for subscriber in self.subscribers:
-            subscriber(event)
+            subscriber(*args, **kwargs)

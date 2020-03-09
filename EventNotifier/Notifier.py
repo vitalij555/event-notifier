@@ -8,6 +8,7 @@ from .SubscriberManager import SubscriberManager
 import threading
 import logging
 
+
 class Notifier(object):
     
     def __init__(self, eventNames, logger=None):
@@ -35,11 +36,11 @@ class Notifier(object):
         return l
 
 
-    def fireEvent(self, eventName, event):
+    def fireEvent(self, eventName, *args, **kwargs):
         self.lock.acquire()
         try:
-            self.logger.info(f"Firing event {eventName} : {event}")
-            self.notifiers[eventName].notify(event)  
+            self.logger.info(f"Firing event {eventName} with following args: {[*args]} {{**kwargs}}")
+            self.notifiers[eventName].notify(*args, **kwargs)
         finally:
             self.lock.release() 
     
