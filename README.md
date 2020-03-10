@@ -10,7 +10,7 @@ Simple python notifier.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Constructor](#constructor)
-- [Available Functions](#available-functions)
+ updated- [API Overview](#api-overview)
 - [Tests](#tests)
 - [License](#license)
 - [Contributing](#contributing)
@@ -22,7 +22,7 @@ This is the
 ## Installation
 
 ```
-pip install event-notifier
+pip install -U event-notifier
 ```
 
 ## Usage
@@ -44,6 +44,32 @@ The function returns a request object. If your event has a `sync` subscription a
 ## Constructor
 
 ```python
+Notifier(eventNames, logger=None)
+```
+
+**Parameters**
+
+- `eventNames` - `list` - mandatory, provides list of all supported events. Values provided here later can be used for raising events  
+- `logger` - `object` - optional, space name, default: `None`
+
+
+## API Overview
+
+```python
+fireEvent(self, eventName, *args, **kwargs)
+```
+```python
+removeSubscribersByEventName(self, eventName)
+```
+```python
+removeAllSubscribers(self)
+```
+
+```python
+addEventSubscriber(self, eventName, subscriber)
+```
+
+```python
 addEventSubscriber(eventName, subscriber)
 ```
 
@@ -55,29 +81,42 @@ addEventSubscriber(eventName, subscriber)
 - `connectorUrl` - `string` - optional, Connector API URL. By default, it's the same as `url` but with `4002` port
 - `accessKey` - `string` - optional, access key for hosted Event Gateway. Access key is required for using Configuration API methods on hosted Event Gateway
 
-**Example**
 
-```python
-import Notifier
-
-notifier = Notifier(["onCreate", "onOpen", "onModify", "onDelete"])
-
-```
-
-## Available Functions
-
-```python
-addEventSubscriber(eventName, subscriber)
-```
 
 ### some Function Name here
 
-TBD
 
 **Example**
 
 ```python
-#TBD
+from EventNotifier import Notifier
+
+
+class FileWatchDog():
+	def onOpen(self, fileName, openMode):
+		print(f"File {fileName} opened with {openMode} mode")
+		
+			
+	def onClose(self, fileName):
+		print(f"File {fileName} closed")
+	
+
+watchDog = FileWatchDog()	
+	
+	
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+
+notifier.addEventSubscriber("onOpen",  watchDog.onOpen)
+notifier.addEventSubscriber("onClose", watchDog.onClose)
+
+notifier.fireEvent("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
+notifier.fireEvent("onClose", fileName="test_file.txt")
+```
+Will produce:
+```console
+$ python test.py
+File test_file.txt opened with w+ mode
+File test_file.txt closed
 ```
 
 ### some other Function Name here
