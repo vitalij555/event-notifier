@@ -73,6 +73,34 @@ Notifier(eventNames, logger=None)
 If None is provided, then internal logger outputting warnings and errors to console will be created.
 
 
+**Example**
+
+Any object can be used as event name. Example below illustrates that:
+
+```python
+class Box:
+    def __init__(self, name):
+        self.name = name
+
+a = Box("name_BoxA")
+b = Box("name_BoxB")
+
+
+notifier = Notifier(["onCreate", 5, 22.58, "onDelete", a, b])
+
+notifier.subscribe("onCreate", onCreateCallback)
+notifier.subscribe(5, on5Callback)
+notifier.subscribe(22.58, onFloatCallback)
+notifier.subscribe(a, onBoxACallback)
+notifier.subscribe(b, onBoxBCallback)
+
+
+notifier.fireEvent(5, "event: ! 5 !")  # on5Callback will be called with "event: ! 5 !" as parameter
+notifier.fireEvent(22.58, "event: ! 22.58 !")    # onFloatCallback will be called with "event: ! 22.58 !" as parameter
+notifier.fireEvent(b, "event: Box b")   # onBoxBCallback will be called with "event: Box b" as parameter
+```
+
+
 ## API Overview
 
 ### subscribe(eventName, subscriber)
@@ -88,8 +116,49 @@ Adds callable subscribers interested in some particular event.
 
 **Example**
 
+```python
 
+```
 
+```console
+
+```
+
+### subscribeToAll(subscriber):
+
+**Description**
+
+Method allows to provide one callable for all events supported by notifier.
+
+**Parameters**
+
+- `subscriber` - `callable` - mandatory, will be called when event rises.
+
+**Example**
+
+```python
+
+```
+
+```console
+
+```
+
+### getSupportedEvents():
+
+**Description**
+
+Returns all supported events as a list
+
+**Example**
+
+```python
+
+```
+
+```console
+
+```
 
 ### fireEvent(eventName, *args, **kwargs)
 
@@ -105,6 +174,13 @@ Adds callable subscribers interested in some particular event.
 
 **Example**
 
+```python
+
+```
+
+```console
+
+```
 
 ### removeSubscribersByEventName(eventName)
 
@@ -117,21 +193,28 @@ Adds callable subscribers interested in some particular event.
 
 **Example**
 
+```python
+
+```
+
+```console
+
+```
 
 ### removeAllSubscribers()
 
 **Description**
 
-**Parameters**
-
-- `url` - `string` - optional, Events API URL, default: `None`
-
 
 **Example**
 
+```python
 
+```
 
+```console
 
+```
 
 
 
