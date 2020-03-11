@@ -38,46 +38,75 @@ def notifierWithoutLogger(logger):
 
 class TestNotifier:
     def test_initialised_OK(self, notifier):
-        assert 4 == len(notifier.notifiers)
+        assert 4 == len(notifier.getSupportedEvents())
         assert not notifier.lock.locked()
 
 
     def test_initiallyEmpty_OK(self, emptyNotifier):
-        assert 0 == len(emptyNotifier.notifiers)
+        assert 0 == len(emptyNotifier.getSupportedEvents())
         assert not emptyNotifier.lock.locked()
 
 
     def test_initialisedWithoutLogger_OK(self, notifierWithoutLogger):
-        assert 4 == len(notifierWithoutLogger.notifiers)
+        assert 4 == len(notifierWithoutLogger.getSupportedEvents())
         assert not notifierWithoutLogger.lock.locked()
 
 
-    def test_initialisedWithRepeatedEcentrs_Raises(self, notifierWithoutLogger):
+    def test_initialisedWithRepeatedEventNames_Raises(self, notifierWithoutLogger):
         with pytest.raises(KeyError):
             Notifier(["onCreate", "onOpen", "onModify", "onDelete", "onOpen"])
+
+
+    def test_supportedEventsAccessible_OK(self, notifierWithoutLogger):
+        notifier = Notifier(["onCreate", "onOpen", "onModify", "onDelete", "onForget"])
+        assert ["onCreate", "onOpen", "onModify", "onDelete", "onForget"] == notifier.getSupportedEvents()
 
 
     def test_fireEvent_OK(self, notifierWithoutLogger):
         onOpenCallback = Mock()
 
-        notifierWithoutLogger.addEventSubscriber("onOpen", onOpenCallback)
+        notifierWithoutLogger.subscribe("onOpen", onOpenCallback)
 
         onOpenCallback.assert_not_called()
         notifierWithoutLogger.fireEvent("onOpen", 77)
         onOpenCallback.assert_called_once_with(77)
 
 
+    def test_fireEventWithNoneAsEventName_Raises(self, notifierWithoutLogger):
+        onOpenCallback = Mock()
+
+        notifierWithoutLogger.subscribe("onOpen", onOpenCallback)
+
+        onOpenCallback.assert_not_called()
+        with pytest.raises(KeyError):
+            notifierWithoutLogger.fireEvent(None, "event info")
+        onOpenCallback.assert_not_called()
+
+
+    def test_fireEventWithNoneAsParameter_OK(self, notifierWithoutLogger):
+        onOpenCallback = Mock()
+
+        notifierWithoutLogger.subscribe("onOpen", onOpenCallback)
+
+        onOpenCallback.assert_not_called()
+        notifierWithoutLogger.fireEvent("onOpen", None)
+        onOpenCallback.assert_called_once_with(None)
+        notifierWithoutLogger.fireEvent("onOpen", None, None, None)
+        onOpenCallback.assert_called_with(None, None, None)
+        assert(2 == onOpenCallback.call_count)
+
+
     def test_fireEventOnlyCorrectIsFired_OK(self, notifierWithoutLogger):
         onOpenCallback = Mock()
         onDeleteCallback = Mock()
 
-        notifierWithoutLogger.addEventSubscriber("onOpen", onOpenCallback)
+        notifierWithoutLogger.subscribe("onOpen", onOpenCallback)
 
         onOpenCallback.assert_not_called()
         onDeleteCallback.assert_not_called()
 
         notifierWithoutLogger.fireEvent("onDelete", 258)
-        notifierWithoutLogger.addEventSubscriber("onDelete", onDeleteCallback)
+        notifierWithoutLogger.subscribe("onDelete", onDeleteCallback)
 
         onOpenCallback.assert_not_called()
         onDeleteCallback.assert_not_called()
@@ -95,8 +124,8 @@ class TestNotifier:
         onCreateCallback = Mock()
         onModifyCallback = Mock()
 
-        notifierWithoutLogger.addEventSubscriber("onCreate", onCreateCallback)
-        notifierWithoutLogger.addEventSubscriber("onModify", onModifyCallback)
+        notifierWithoutLogger.subscribe("onCreate", onCreateCallback)
+        notifierWithoutLogger.subscribe("onModify", onModifyCallback)
 
         onCreateCallback.assert_not_called()
         onModifyCallback.assert_not_called()
@@ -117,31 +146,32 @@ class TestNotifier:
 
 
     def test_allRemovedNotFiredToo_OK(self, notifierWithoutLogger):
-        onCreateCallback = Mock()
-        onModifyCallback = Mock()
+        onOpenCallback = Mock()
+        onDeleteCallback = Mock()
 
-        notifierWithoutLogger.addEventSubscriber("onCreate", onCreateCallback)
-        notifierWithoutLogger.addEventSubscriber("onModify", onModifyCallback)
+        notifierWithoutLogger.subscribe("onOpen", onOpenCallback)
+        notifierWithoutLogger.subscribe("onDelete", onDeleteCallback)
 
-        onCreateCallback.assert_not_called()
-        onModifyCallback.assert_not_called()
+        onOpenCallback.assert_not_called()
+        onDeleteCallback.assert_not_called()
 
-        notifierWithoutLogger.fireEvent("onCreate", "event: test_removedSubscriberIsNotFired_OK - onCreate")
-        onCreateCallback.assert_called_once_with("event: test_removedSubscriberIsNotFired_OK - onCreate")
-        onModifyCallback.assert_not_called()
+        notifierWithoutLogger.fireEvent("onOpen", "event: test_removedSubscriberIsNotFired_OK - onOpen")
+        onOpenCallback.assert_called_once_with("event: test_removedSubscriberIsNotFired_OK - onOpen")
+        onDeleteCallback.assert_not_called()
 
         notifierWithoutLogger.removeAllSubscribers()
-        notifierWithoutLogger.fireEvent("onCreate", "event: second time")
 
-        onCreateCallback.assert_called_once_with("event: test_removedSubscriberIsNotFired_OK - onCreate")
-        onModifyCallback.assert_not_called()
+        notifierWithoutLogger.fireEvent("onOpen", "event: second time")
+
+        onOpenCallback.assert_called_once_with("event: test_removedSubscriberIsNotFired_OK - onOpen")
+        onDeleteCallback.assert_not_called()
 
 
     def test_repeatedlyAddingSameSubscriber_OK(self, notifierWithoutLogger):
         onCreateCallback = Mock()
-        notifierWithoutLogger.addEventSubscriber("onCreate", onCreateCallback)
-        notifierWithoutLogger.addEventSubscriber("onCreate", onCreateCallback)
-        notifierWithoutLogger.addEventSubscriber("onCreate", onCreateCallback)
+        notifierWithoutLogger.subscribe("onCreate", onCreateCallback)
+        notifierWithoutLogger.subscribe("onCreate", onCreateCallback)
+        notifierWithoutLogger.subscribe("onCreate", onCreateCallback)
 
         onCreateCallback.assert_not_called()
 
@@ -149,6 +179,7 @@ class TestNotifier:
         onCreateCallback.assert_called_once_with("event: onCreate 2222")
 
 
+    #TODO: refactor this test to use parmetrised annotation
     def test_anyTypeAsEvent_OK(self):
         class Box:
             def __init__(self, name):
@@ -156,7 +187,7 @@ class TestNotifier:
 
         a = Box("keyBoxA")
         b = Box("keyBoxB")
-        c = Box("keyBoxB")
+        c = Box("keyBoxB")  # intentionally named this way to look like b
 
         notifier = Notifier(["onCreate", 5, 22.58, "onDelete", a, b])
         onCreateCallback = Mock()
@@ -165,11 +196,11 @@ class TestNotifier:
         onBoxACallback   = Mock()
         onBoxBCallback   = Mock()
 
-        notifier.addEventSubscriber("onCreate", onCreateCallback)
-        notifier.addEventSubscriber(5, on5Callback)
-        notifier.addEventSubscriber(22.58, onFloatCallback)
-        notifier.addEventSubscriber(a, onBoxACallback)
-        notifier.addEventSubscriber(b, onBoxBCallback)
+        notifier.subscribe("onCreate", onCreateCallback)
+        notifier.subscribe(5, on5Callback)
+        notifier.subscribe(22.58, onFloatCallback)
+        notifier.subscribe(a, onBoxACallback)
+        notifier.subscribe(b, onBoxBCallback)
 
         onCreateCallback.assert_not_called()
         on5Callback.assert_not_called()
@@ -233,7 +264,7 @@ class TestNotifier:
     def test_notifySubscribersWithMultipleParams_OK(self, notifier):
         onModifyCallback = Mock()
 
-        notifier.addEventSubscriber("onModify", onModifyCallback)
+        notifier.subscribe("onModify", onModifyCallback)
 
         onModifyCallback.assert_not_called()
 

@@ -12,7 +12,7 @@ import logging
 class Notifier(object):
     
     def __init__(self, eventNames, logger=None):
-        self.notifiers = {};
+        self.__notifiers = {};
         self.lock = threading.Lock()
         if not logger == None:
             self.logger = logger
@@ -21,9 +21,9 @@ class Notifier(object):
                
         for eventName in eventNames:
             self.logger.info(f"Registering event notifier: \"{eventName}\"")
-            if(eventName in self.notifiers):
+            if(eventName in self.__notifiers):
                 raise KeyError("Duplicating names in notifiers' list input")
-            self.notifiers[eventName] = SubscriberManager();
+            self.__notifiers[eventName] = SubscriberManager(eventName);
 
 
     def __setupLogger(self):
@@ -40,7 +40,7 @@ class Notifier(object):
         self.lock.acquire()
         try:
             self.logger.info(f"Firing event {eventName} with following args: {[*args]} {{**kwargs}}")
-            self.notifiers[eventName].notify(*args, **kwargs)
+            self.__notifiers[eventName].notify(*args, **kwargs)
         finally:
             self.lock.release() 
     
@@ -52,7 +52,7 @@ class Notifier(object):
     def removeSubscribersByEventName(self, eventName):
         self.lock.acquire()
         try:
-            self.notifiers[eventName].subscribers.clear()
+            self.__notifiers[eventName].subscribers.clear()
         finally:
             self.lock.release() 
 
@@ -60,7 +60,7 @@ class Notifier(object):
     def removeAllSubscribers(self):
         self.lock.acquire()
         try:
-            for key, notifier in self.notifiers.items():
+            for key, notifier in self.__notifiers.items():
                 self.__removeSubscribersForNotifier(notifier)
         finally:
             self.lock.release()
@@ -70,10 +70,40 @@ class Notifier(object):
         self.lock.acquire()
         try:
             self.logger.info(f"Adding event subscriber for event {eventName}...")    
-            if(subscriber not in self.notifiers[eventName].subscribers):       
-                self.notifiers[eventName].subscribers.append(subscriber)
+            if(subscriber not in self.__notifiers[eventName].subscribers):
+                self.__notifiers[eventName].subscribers.append(subscriber)
                 self.logger.info(f"...OK")
             else:
                 self.logger.warning("Subscriber you are trying to add was registered already")
         finally:
             self.lock.release()
+
+
+    def subscribe(self, eventName, subscriber):
+        self.lock.acquire()
+        try:
+            self.logger.info(f"Adding event subscriber for event {eventName}...")
+            if(subscriber not in self.__notifiers[eventName].subscribers):
+                self.__notifiers[eventName].subscribers.append(subscriber)
+                self.logger.info(f"...OK")
+            else:
+                self.logger.warning("Subscriber you are trying to add was registered already")
+        finally:
+            self.lock.release()
+
+
+    def subscribeToAll(self, subscriber):
+        self.lock.acquire()
+        for notifier, _ in self.__notifiers.items():
+            try:
+                self.logger.info(f"Adding event subscriber for event {notifier.getName()}...")
+                if(subscriber not in notifier.subscribers):
+                    notifier.subscribers.append(subscriber)
+                    self.logger.info(f"...OK")
+                else:
+                    self.logger.warning("Subscriber you are trying to add was registered already")
+            finally:
+                self.lock.release()
+
+    def getSupportedEvents(self):
+        return list(self.__notifiers.keys())

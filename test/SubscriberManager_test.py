@@ -10,7 +10,7 @@ from EventNotifier.SubscriberManager import SubscriberManager
 
 @pytest.fixture(scope="class")  # scope="function" is default
 def subscriber():
-    return SubscriberManager()
+    return SubscriberManager("subscriberName")
 
 
 class TestSubscriberManager:
@@ -34,3 +34,5 @@ class TestSubscriberManager:
         subscriber.notify(7)
         subscriberCallback.assert_called_with(7)
 
+    def test_nameIsAccessible(self, subscriber):
+        assert "subscriberName" == subscriber.getName()

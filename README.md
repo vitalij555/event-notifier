@@ -46,8 +46,8 @@ watchDog = FileWatchDog()
 	
 notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
 
-notifier.addEventSubscriber("onOpen",  watchDog.onOpen)
-notifier.addEventSubscriber("onClose", watchDog.onClose)
+notifier.subscribe("onOpen",  watchDog.onOpen)
+notifier.subscribe("onClose", watchDog.onClose)
 
 notifier.fireEvent("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
 notifier.fireEvent("onClose", fileName="test_file.txt")
@@ -67,58 +67,73 @@ Notifier(eventNames, logger=None)
 
 **Parameters**
 
-- `eventNames` - `list` - mandatory, provides list of all supported events. Values provided here later can be used for raising events  
-- `logger` - `object` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`
+- `eventNames` - `list of any` - mandatory, provides list of all supported events. Values provided here can be used for raising events later.
+ Values provided in this list can be of any type.
+- `logger` - `object` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`. 
+If None is provided, then internal logger outputting warnings and errors to console will be created.
 
 
 ## API Overview
 
-```python
-fireEvent(eventName, *args, **kwargs)
-```
+### subscribe(eventName, subscriber)
 
-```python
-removeSubscribersByEventName(eventName)
-```
+**Description**
 
-```python
-removeAllSubscribers()
-```
-
-```python
-addEventSubscriber(eventName, subscriber)
-```
-
-```python
-addEventSubscriber(subscriber)
-```
+Adds callable subscribers interested in some particular event. 
 
 **Parameters**
 
-- `url` - `string` - optional, Events API URL, default: `http://localhost:4000`
-- `space` - `string` - optional, space name, default: `default`
-- `configurationUrl` - `string` - optional, Configuration API URL. By default, it's the same as `url` but with `4001` port
-- `connectorUrl` - `string` - optional, Connector API URL. By default, it's the same as `url` but with `4002` port
-- `accessKey` - `string` - optional, access key for hosted Event Gateway. Access key is required for using Configuration API methods on hosted Event Gateway
+- `eventName` - `any` - mandatory, specifies event, subscriber will be interested in.
+- `subscriber` - `any` - mandatory, callable subscriber (function, class method or class with __call__ implemented)
+
+**Example**
 
 
 
-### some Function Name here
+
+### fireEvent(eventName, *args, **kwargs)
+
+**Description**
+
+
+
+**Parameters**
+
+- `eventName` - `any` - mandatory, provides list of all supported events. Values provided here later can be used for raising events  
+- `*args` - `list` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`
+- `**kwargs` - `dictionary` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`
+
+**Example**
+
+
+### removeSubscribersByEventName(eventName)
+
+**Description**
+
+**Parameters**
+
+- `url` - `string` - optional, Events API URL, default: `None`
+
+
+**Example**
+
+
+### removeAllSubscribers()
+
+**Description**
+
+**Parameters**
+
+- `url` - `string` - optional, Events API URL, default: `None`
 
 
 **Example**
 
 
 
-### some other Function Name here
 
-Utility to print the current configuration.
 
-**Example**
 
-```python
-#TBD
-```
 
 ## Tests
 
