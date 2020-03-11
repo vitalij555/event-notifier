@@ -17,12 +17,13 @@ Library providing event registration and routing infrastructure.
 
 ## Background
 
-This is event notifier (sometimes known as emitter or dispatcher) allowing to notify one or many subscribers with an event that just happen.
-Allows to use variable number of arguments. 
+This is implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just happen.
 
-It is thread-safe. This means you can freely rise events from one thread while registering new receivers in another thread.
+Any python object inheriting from or containing notifier can act as event sender and any callable object can act as event receiver.
+Allows to register receivers having variable number of arguments. 
 
-Any python object inheriting from or containing notifier can act as event sender and callable object can act as event receiver.
+It is thread-safe. This means you can freely rise events from one thread while registering new receivers in another.
+
 
 ## Installation
 
