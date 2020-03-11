@@ -2,7 +2,7 @@
 
 # event-notifier
 
-Simple python notifier.
+Library providing event registration and routing infrastructure.
 
 ## Contents
 
@@ -17,8 +17,12 @@ Simple python notifier.
 
 ## Background
 
-This is event notifier (sometimes called emitter) allowing to notify one or many subscribers about something that just happen.
-Allows to use variable number of arguments. Is thread-safe. 
+This is event notifier (sometimes known as emitter or dispatcher) allowing to notify one or many subscribers with an event that just happen.
+Allows to use variable number of arguments. 
+
+It is thread-safe. This means you can freely rise events from one thread while registering new receivers in another thread.
+
+Any python object inheriting from or containing notifier can act as event sender and callable object can act as event receiver.
 
 ## Installation
 
@@ -112,23 +116,14 @@ Adds callable subscribers interested in some particular event.
 **Parameters**
 
 - `eventName` - `any` - mandatory, specifies event, subscriber will be interested in.
-- `subscriber` - `any` - mandatory, callable subscriber (function, class method or class with __call__ implemented)
+- `subscriber` - `any` - mandatory, callable subscriber (function, class method or class with \_\_call\_\_ implemented)
 
-**Example**
-
-```python
-
-```
-
-```console
-
-```
 
 ### subscribeToAll(subscriber):
 
 **Description**
 
-Method allows to provide one callable for all events supported by notifier.
+Method allows to register one callable for all events supported by notifier.
 
 **Parameters**
 
@@ -148,29 +143,32 @@ Method allows to provide one callable for all events supported by notifier.
 
 **Description**
 
-Returns all supported events as a list
+Returns all supported events as a list.
 
 **Example**
 
 ```python
+from EventNotifier import Notifier
 
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+print(notifier.getSupportedEvents())
 ```
-
+will output:
 ```console
-
+['onCreate', 'onOpen', 'onModify', 'onClose', 'onDelete']
 ```
 
 ### fireEvent(eventName, *args, **kwargs)
 
 **Description**
 
-
+Rises specific event registered during initialization.
 
 **Parameters**
 
 - `eventName` - `any` - mandatory, provides list of all supported events. Values provided here later can be used for raising events  
-- `*args` - `list` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`
-- `**kwargs` - `dictionary` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`
+- `*args` - `list` - optional, all simple parameters we want to pass to our subscribers (param1, param2, param3...).
+- `**kwargs` - `dictionary` - optional, all named parameters we want to pass (param1=value1, param2=value2, param3=value3) 
 
 **Example**
 
@@ -188,7 +186,6 @@ Returns all supported events as a list
 
 **Parameters**
 
-- `url` - `string` - optional, Events API URL, default: `None`
 
 
 **Example**
@@ -231,11 +228,24 @@ $ pip install pytest
 **Run tests**
 
 ```sh
-$ py.test test/*
+$ pytest test/*
 ```
 
 [pytest]: http://pytest.org/
 
+**Check test coverage**
+
+In order to generate test coverage report install pytest-cov:
+
+```sh
+$ pip install pytest-cov
+```
+
+Then inside test subdirectory call: 
+
+```sh
+pytest --cov=../EventNotifier --cov-report=html
+```
 
 ## License
 

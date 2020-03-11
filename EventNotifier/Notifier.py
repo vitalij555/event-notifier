@@ -65,20 +65,6 @@ class Notifier(object):
         finally:
             self.lock.release()
         
-        
-    def addEventSubscriber(self, eventName, subscriber):
-        self.lock.acquire()
-        try:
-            self.logger.info(f"Adding event subscriber for event {eventName}...")    
-            if(subscriber not in self.__notifiers[eventName].subscribers):
-                self.__notifiers[eventName].subscribers.append(subscriber)
-                self.logger.info(f"...OK")
-            else:
-                self.logger.warning("Subscriber you are trying to add was registered already")
-        finally:
-            self.lock.release()
-
-
     def subscribe(self, eventName, subscriber):
         self.lock.acquire()
         try:
@@ -93,17 +79,17 @@ class Notifier(object):
 
 
     def subscribeToAll(self, subscriber):
-        self.lock.acquire()
-        for notifier, _ in self.__notifiers.items():
-            try:
-                self.logger.info(f"Adding event subscriber for event {notifier.getName()}...")
-                if(subscriber not in notifier.subscribers):
-                    notifier.subscribers.append(subscriber)
+        try:
+            self.lock.acquire()
+            for subscriberManager in self.__notifiers.values():
+                self.logger.info(f"Adding event subscriber for event {subscriberManager.getName()}...")
+                if(subscriber not in subscriberManager.subscribers):
+                    subscriberManager.subscribers.append(subscriber)
                     self.logger.info(f"...OK")
                 else:
                     self.logger.warning("Subscriber you are trying to add was registered already")
-            finally:
-                self.lock.release()
+        finally:
+            self.lock.release()
 
     def getSupportedEvents(self):
         return list(self.__notifiers.keys())
