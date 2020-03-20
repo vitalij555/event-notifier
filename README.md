@@ -117,11 +117,30 @@ Adds callable subscribers interested in some particular event.
 **Example**
 
 ```python
+class CallableFileWatchdog:
+	def __init__(self, pathToWatch):
+		self.pathToWatch = pathToWatch
+		
 
+	def __call__(self, *args, **kwargs):
+		if len(args) > 0:
+			print(f"Event {args[0]} at path {self.pathToWatch} is called with following simple args: {[*args]} and with following keyword args: { {**kwargs} }")
+
+
+callableWatchdog = CallableFileWatchdog("some\path\here")
+
+
+notifier.subscribe("onCreate", callableWatchdog)
+notifier.subscribe("onOpen",   callableWatchdog)
+
+
+notifier.fireEvent("onCreate", "onCreate", fileName="test_file.txt")
+notifier.fireEvent("onOpen", "onOpen", openMode="w+", fileName="test_file.txt") 
 ```
-
+gives:
 ```console
-
+Event onCreate at path some\path\here is called with following simple args: ['onCreate'] and with following keyword args: {'fileName': 'test_file.txt'}
+Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
 ```
 
 ### subscribeToAll(subscriber):
@@ -132,32 +151,28 @@ Method allows to provide one callable for all events supported by notifier.
 
 **Parameters**
 
-- `subscriber` - `callable` - mandatory, will be called when event rises.
+- `subscriber` - `callable` - mandatory, will be called when any event rises.
 
-**Example**
 
-```python
-
-```
-
-```console
-
-```
 
 ### getSupportedEvents():
 
 **Description**
 
-Returns all supported events as a list
+Returns all supported events as a list.
 
 **Example**
 
+
 ```python
+from EventNotifier import Notifier
 
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+print(notifier.getSupportedEvents())
 ```
-
+will output:
 ```console
-
+['onCreate', 'onOpen', 'onModify', 'onClose', 'onDelete']
 ```
 
 ### fireEvent(eventName, *args, **kwargs)
