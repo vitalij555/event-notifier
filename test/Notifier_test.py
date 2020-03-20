@@ -23,7 +23,7 @@ def logger():
 
 @pytest.fixture(scope="class")  # scope="function" is default
 def notifier(logger):
-    return Notifier(["onCreate", "onOpen", "onModify", "onDelete"], logger)
+    return Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"], logger)
 
 
 @pytest.fixture(scope="class")  # scope="function" is default
@@ -38,7 +38,7 @@ def notifierWithoutLogger(logger):
 
 class TestNotifier:
     def test_initialised_OK(self, notifier):
-        assert 4 == len(notifier.getSupportedEvents())
+        assert 5 == len(notifier.getSupportedEvents())
         assert not notifier.lock.locked()
 
 
@@ -270,3 +270,39 @@ class TestNotifier:
 
         notifier.fireEvent("onModify", "some text", 25, 16.99, named1 = "named param value", named2 = 25)
         onModifyCallback.assert_called_once_with("some text", 25, 16.99, named1 = "named param value", named2 = 25)
+
+
+    def test_subscribeToAll_OK(self, notifier):
+        onAnyCallback = Mock()
+
+        notifier.subscribeToAll(onAnyCallback)
+
+        onAnyCallback.assert_not_called()
+
+        notifier.fireEvent("onCreate", "event specific info here", event_type="onCreate")
+        onAnyCallback.assert_called_once_with("event specific info here", event_type="onCreate")
+
+        notifier.fireEvent("onOpen", "event specific info22 here", event_type="onOpen")
+        onAnyCallback.assert_called_with("event specific info22 here", event_type="onOpen")
+        assert (2 == onAnyCallback.call_count)
+
+        notifier.fireEvent("onClose", "event specific info33 here", event_type="onClose")
+        onAnyCallback.assert_called_with("event specific info33 here", event_type="onClose")
+        assert (3 == onAnyCallback.call_count)
+
+
+    def test_subscribeToAllIfWasAlreadyRegisteredToOne_OK(self, notifier):
+        onAnyCallback = Mock()
+
+        notifier.subscribe("onCreate", onAnyCallback)
+        notifier.subscribeToAll(onAnyCallback)
+
+        onAnyCallback.assert_not_called()
+
+        notifier.fireEvent("onCreate", "event specific info here", event_type="onCreate")
+        onAnyCallback.assert_called_once_with("event specific info here", event_type="onCreate")
+
+        notifier.fireEvent("onOpen", "event specific info22 here", event_type="onOpen")
+        onAnyCallback.assert_called_with("event specific info22 here", event_type="onOpen")
+        assert (2 == onAnyCallback.call_count)
+
