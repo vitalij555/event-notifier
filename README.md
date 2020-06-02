@@ -22,8 +22,6 @@ This is implementation of event notifier (also known as emitter or dispatcher) a
 Any python object inheriting from or containing notifier can act as event sender and any callable object can act as event receiver.
 Allows to register receivers having variable number of arguments. 
 
-It is thread-safe. This means you can freely rise events from one thread while registering new receivers in another.
-
 
 ## Installation
 
