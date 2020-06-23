@@ -15,6 +15,7 @@ Library providing event registration and routing infrastructure.
 - [License](#license)
 - [Contributing](#contribute)
 
+
 ## Background
 
 This is implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just happen.
@@ -227,7 +228,7 @@ Rises specific event registered during initialization.
 
 **Example**
 
-Check subscribe method's example link [above](#subscribe(eventName, subscriber)).
+Check subscribe method's example link [above](##subscribe-eventName-subscriber).
 
 ### remove_subscribers_by_event_name(event_name)
 
