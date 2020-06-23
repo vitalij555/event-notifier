@@ -13,7 +13,7 @@ Library providing event registration and routing infrastructure.
 - [API Overview](#api-overview)
 - [Tests](#tests)
 - [License](#license)
-- [Contributing](#contributing)
+- [Contributing](#contribute)
 
 ## Background
 
@@ -62,7 +62,7 @@ File test_file.txt opened with w+ mode
 File test_file.txt closed
 ```
 
-##Constructor
+## Constructor
 
 ```python
 Notifier(eventNames: list, logger=None)
@@ -227,7 +227,7 @@ Rises specific event registered during initialization.
 
 **Example**
 
-Check subscribe method's example link [above](#subscribe).
+Check subscribe method's example link [above](#subscribe(eventName, subscriber)).
 
 ### remove_subscribers_by_event_name(event_name)
 
