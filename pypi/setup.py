@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setup(
   name = 'event-notifier',         # How you named your package folder (MyLib)
   packages=setuptools.find_packages(),
-  version = '1.0.0',
+  version = '1.0.1',
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Event notifier with many subscribers support',   # Give a short description about your library
   long_description=long_description,
@@ -18,7 +18,7 @@ setup(
   # download_url = 'https://github.com/vitalij555/event-notifier/archive/v_0_1_1.tar.gz',
   keywords = ['EVENT', 'NOTIFY', 'SUBSCRIBE', "OBSERVER"],   # Keywords that define your package best
   classifiers=[
-    'Development Status :: 3 - Alpha',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
+    'Development Status :: 5 - Production/Stable',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
     'Intended Audience :: Developers',      # Define that your audience are developers
     'Topic :: Software Development :: Build Tools',
     'Operating System :: OS Independent',
