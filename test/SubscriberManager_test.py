@@ -20,7 +20,7 @@ class TestSubscriberManager:
     # def tearDownClass():
     #     print("Wow teardown called...")
 
-    def test_initiallyEmpty(self, subscriber):
+    def test_subscribe_to_all(self, subscriber):
         assert 0 == len(subscriber.subscribers)
 
 

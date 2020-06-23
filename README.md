@@ -52,8 +52,8 @@ notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
 notifier.subscribe("onOpen",  watchDog.onOpen)
 notifier.subscribe("onClose", watchDog.onClose)
 
-notifier.fireEvent("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
-notifier.fireEvent("onClose", fileName="test_file.txt")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
+notifier.raise_event("onClose", fileName="test_file.txt")
 ```
 Will produce:
 ```console
@@ -62,10 +62,10 @@ File test_file.txt opened with w+ mode
 File test_file.txt closed
 ```
 
-## Constructor
+##Constructor
 
 ```python
-Notifier(eventNames, logger=None)
+Notifier(eventNames: list, logger=None)
 ```
 
 **Parameters**
@@ -81,6 +81,8 @@ If None is provided, then internal logger outputting warnings and errors to cons
 Any object can be used as event name. Example below illustrates that:
 
 ```python
+from EventNotifier import Notifier
+
 class Box:
     def __init__(self, name):
         self.name = name
@@ -98,15 +100,15 @@ notifier.subscribe(a, onBoxACallback)
 notifier.subscribe(b, onBoxBCallback)
 
 
-notifier.fireEvent(5, "event: ! 5 !")  # on5Callback will be called with "event: ! 5 !" as parameter
-notifier.fireEvent(22.58, "event: ! 22.58 !")    # onFloatCallback will be called with "event: ! 22.58 !" as parameter
-notifier.fireEvent(b, "event: Box b")   # onBoxBCallback will be called with "event: Box b" as parameter
+notifier.raise_event(5, "event: ! 5 !")  # on5Callback will be called with "event: ! 5 !" as parameter
+notifier.raise_event(22.58, "event: ! 22.58 !")    # onFloatCallback will be called with "event: ! 22.58 !" as parameter
+notifier.raise_event(b, "event: Box b")   # onBoxBCallback will be called with "event: Box b" as parameter
 ```
 
 
 ## API Overview
 
-### subscribe(eventName, subscriber)
+### subscribe(eventName, subscriber) 
 
 **Description**
 
@@ -114,12 +116,14 @@ Adds callable subscribers interested in some particular event.
 
 **Parameters**
 
-- `eventName` - `any` - mandatory, specifies event, subscriber will be interested in.
+- `eventName` - `any` - mandatory, specifies name of the event, subscriber will be interested in.
 - `subscriber` - `any` - mandatory, callable subscriber (function, class method or class with __call__ implemented)
 
 **Example**
 
 ```python
+from EventNotifier import Notifier
+
 class CallableFileWatchdog:
 	def __init__(self, pathToWatch):
 		self.pathToWatch = pathToWatch
@@ -132,13 +136,15 @@ class CallableFileWatchdog:
 
 callableWatchdog = CallableFileWatchdog("some\path\here")
 
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+
 
 notifier.subscribe("onCreate", callableWatchdog)
 notifier.subscribe("onOpen",   callableWatchdog)
 
 
-notifier.fireEvent("onCreate", "onCreate", fileName="test_file.txt")
-notifier.fireEvent("onOpen", "onOpen", openMode="w+", fileName="test_file.txt") 
+notifier.raise_event("onCreate", "onCreate", fileName="test_file.txt")
+notifier.raise_event("onOpen", "onOpen", openMode="w+", fileName="test_file.txt") 
 ```
 gives:
 ```console
@@ -146,11 +152,12 @@ Event onCreate at path some\path\here is called with following simple args: ['on
 Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
 ```
 
-### subscribeToAll(subscriber):
+### subscribe_to_all(subscriber):
 
 **Description**
 
 Method allows to register one callable for all events supported by notifier.
+
 
 **Parameters**
 
@@ -158,9 +165,37 @@ Method allows to register one callable for all events supported by notifier.
 
 **Example**
 
+```python
+from EventNotifier import Notifier
+
+class CallableFileWatchdog:
+	def __init__(self, pathToWatch):
+		self.pathToWatch = pathToWatch
+		
+
+	def __call__(self, *args, **kwargs):
+		if len(args) > 0:
+			print(f"Event {args[0]} at path {self.pathToWatch} is called with following simple args: {[*args]} and with following keyword args: { {**kwargs} }")
 
 
-### getSupportedEvents():
+callableWatchdog = CallableFileWatchdog("some\path\here")
+
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+
+
+notifier.subscribe("onCreate", callableWatchdog)
+notifier.subscribe("onOpen",   callableWatchdog)
+
+
+notifier.raise_event("onCreate", "onCreate", fileName="test_file.txt")
+notifier.raise_event("onOpen", "onOpen", openMode="w+", fileName="test_file.txt") 
+```
+```console
+Event onCreate at path some\path\here is called with following simple args: ['onCreate'] and with following keyword args: {'fileName': 'test_file.txt'}
+Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
+```
+
+### get_supported_events():
 
 **Description**
 
@@ -170,16 +205,15 @@ Returns all supported events as a list.
 
 ```python
 from EventNotifier import Notifier
-
 notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
-print(notifier.getSupportedEvents())
+print(notifier.get_registered_events())
 ```
 will output:
 ```console
 ['onCreate', 'onOpen', 'onModify', 'onClose', 'onDelete']
 ```
 
-### fireEvent(eventName, *args, **kwargs)
+### raise_event(eventName, *args, **kwargs)
 
 **Description**
 
@@ -187,51 +221,125 @@ Rises specific event registered during initialization.
 
 **Parameters**
 
-- `eventName` - `any` - mandatory, provides list of all supported events. Values provided here later can be used for raising events  
+- `eventName` - `any` - mandatory, name of the event to be raised.
 - `*args` - `list` - optional, all simple parameters we want to pass to our subscribers (param1, param2, param3...).
 - `**kwargs` - `dictionary` - optional, all named parameters we want to pass (param1=value1, param2=value2, param3=value3) 
 
 **Example**
 
-```python
+Check subscribe method's example link [above](#subscribe).
 
-```
-
-```console
-
-```
-
-### removeSubscribersByEventName(eventName)
+### remove_subscribers_by_event_name(event_name)
 
 **Description**
+
+Removes all subscribers for the specified event_name
 
 **Parameters**
 
-
+- `eventName` - `any` - mandatory, name of the event we want to remove subscribers for.
 
 **Example**
 
 ```python
+from EventNotifier import Notifier
+class FileWatchDog():
+    def onOpen(self, fileName, openMode):
+        print(f"File {fileName} opened with {openMode} mode")
 
+    def onClose(self, fileName):
+        print(f"File {fileName} closed")
+
+
+def onOpenStandaloneMethod(fileName, openMode):
+    print(f"StandaloneMethod: File {fileName} opened with {openMode} mode")
+
+watchDog = FileWatchDog()
+
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+
+notifier.subscribe("onOpen", watchDog.onOpen)
+notifier.subscribe("onOpen", onOpenStandaloneMethod)
+notifier.subscribe("onClose", watchDog.onClose)
+
+print("\nAfter subscription:")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
+notifier.raise_event("onClose", fileName="test_file.txt")
+
+notifier.remove_subscribers_by_event_name("onOpen")
+
+print("\nAfter removal of onOpen subscribers:")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
+notifier.raise_event("onClose", fileName="test_file.txt")
+
+notifier.remove_subscribers_by_event_name("onClose")
+
+print("\nAfter removal of onClose subscribers:")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")  # order of named parameters is not important
+notifier.raise_event("onClose", fileName="test_file.txt")
 ```
 
+will output:
 ```console
+After subscription:
+File test_file.txt opened with w+ mode
+StandaloneMethod: File test_file.txt opened with w+ mode
+File test_file.txt closed
 
+After removal of onOpen subscribers:
+File test_file.txt closed
+
+After removal of onClose subscribers:
 ```
 
-### removeAllSubscribers()
+### remove_all_subscribers()
 
 **Description**
 
+Removes all subscribers for all events
 
 **Example**
 
 ```python
+from EventNotifier import Notifier
+class FileWatchDog():
+    def onOpen(self, fileName, openMode):
+        print(f"File {fileName} opened with {openMode} mode")
 
+    def onClose(self, fileName):
+        print(f"File {fileName} closed")
+
+
+def onOpenStandaloneMethod(fileName, openMode):
+    print(f"StandaloneMethod: File {fileName} opened with {openMode} mode")
+
+watchDog = FileWatchDog()
+
+notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
+
+notifier.subscribe("onOpen", watchDog.onOpen)
+notifier.subscribe("onOpen", onOpenStandaloneMethod)
+notifier.subscribe("onClose", watchDog.onClose)
+
+print("\nAfter subscription:")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")
+notifier.raise_event("onClose", fileName="test_file.txt")
+
+notifier.remove_all_subscribers()
+
+print("\nAfter removal of all subscribers:")
+notifier.raise_event("onOpen", openMode="w+", fileName="test_file.txt")
+notifier.raise_event("onClose", fileName="test_file.txt")
 ```
 
+will give:
 ```console
+After subscription:
+File test_file.txt opened with w+ mode
+StandaloneMethod: File test_file.txt opened with w+ mode
+File test_file.txt closed
 
+After removal of all subscribers:
 ```
 
 
