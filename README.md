@@ -30,6 +30,7 @@ Allows to register receivers having variable number of arguments.
 pip install -U event-notifier
 ```
 
+
 ## Usage
 
 ```python
@@ -63,11 +64,13 @@ File test_file.txt opened with w+ mode
 File test_file.txt closed
 ```
 
+
 ## Constructor
 
 ```python
 Notifier(eventNames: list, logger=None)
 ```
+
 
 **Parameters**
 
@@ -75,6 +78,7 @@ Notifier(eventNames: list, logger=None)
  Values provided in this list can be of any type.
 - `logger` - `object` - optional, logger supporting standard logging methods (info, warning error, etc..), default: `None`. 
 If None is provided, then internal logger outputting warnings and errors to console will be created.
+
 
 
 **Example**
@@ -108,6 +112,7 @@ notifier.raise_event(b, "event: Box b")   # onBoxBCallback will be called with "
 
 
 ## API Overview
+
 
 ### subscribe(eventName, subscriber) 
 
@@ -153,6 +158,7 @@ Event onCreate at path some\path\here is called with following simple args: ['on
 Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
 ```
 
+
 ### subscribe_to_all(subscriber):
 
 **Description**
@@ -196,6 +202,7 @@ Event onCreate at path some\path\here is called with following simple args: ['on
 Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
 ```
 
+
 ### get_supported_events():
 
 **Description**
@@ -214,6 +221,7 @@ will output:
 ['onCreate', 'onOpen', 'onModify', 'onClose', 'onDelete']
 ```
 
+
 ### raise_event(eventName, *args, **kwargs)
 
 **Description**
@@ -229,6 +237,7 @@ Rises specific event registered during initialization.
 **Example**
 
 Check subscribe method's example link [above](#subscribeeventname-subscriber).
+
 
 ### remove_subscribers_by_event_name(event_name)
 
@@ -292,6 +301,7 @@ File test_file.txt closed
 
 After removal of onClose subscribers:
 ```
+
 
 ### remove_all_subscribers()
 
