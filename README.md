@@ -1,4 +1,5 @@
 ![Upload Python Package](https://github.com/vitalij555/event-notifier/workflows/Upload%20Python%20Package/badge.svg)
+[![PyPi version](https://img.shields.io/pypi/v/event-notifier.svg?style=flat-square) ](https://pypi.python.org/pypi/event-notifier) [![Supported Python versions](https://img.shields.io/pypi/pyversions/event-notifier.svg?style=flat-square) ](https://pypi.org/project/event-notifier) [![License](https://img.shields.io/pypi/l/event-notifier.svg?style=flat-square) ](https://choosealicense.com/licenses) 
 
 # event-notifier
 
