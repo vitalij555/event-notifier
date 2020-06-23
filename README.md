@@ -228,7 +228,7 @@ Rises specific event registered during initialization.
 
 **Example**
 
-Check subscribe method's example link [above](##subscribe-eventName-subscriber).
+Check subscribe method's example link [above](#subscribe-eventName-subscriber).
 
 ### remove_subscribers_by_event_name(event_name)
 
