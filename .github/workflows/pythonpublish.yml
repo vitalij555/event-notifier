@@ -30,9 +30,11 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
+        pip install codecov
         cd test
         pytest --cov=../EventNotifier --cov-report=html
         cd ..
+        codecov
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
