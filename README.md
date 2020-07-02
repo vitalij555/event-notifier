@@ -174,30 +174,29 @@ Method allows to register one callable for all events supported by notifier.
 **Example**
 
 ```python
+def test_subscribe_to_all(self):
 from EventNotifier import Notifier
-
 class CallableFileWatchdog:
-	def __init__(self, pathToWatch):
-		self.pathToWatch = pathToWatch
-		
-
-	def __call__(self, *args, **kwargs):
-		if len(args) > 0:
-			print(f"Event {args[0]} at path {self.pathToWatch} is called with following simple args: {[*args]} and with following keyword args: { {**kwargs} }")
+    def __init__(self, pathToWatch):
+	self.pathToWatch = pathToWatch
 
 
-callableWatchdog = CallableFileWatchdog("some\path\here")
+    def __call__(self, *args, **kwargs):
+	if len(args) > 0:
+	    print \
+		(f"Event {args[0]} at path {self.pathToWatch} is called with following simple args: {[*args]} and with following keyword args: { {**kwargs} }")
 
+callable_watchog = CallableFileWatchdog("some\\path\\here")
 notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
 
-
-notifier.subscribe("onCreate", callableWatchdog)
-notifier.subscribe("onOpen",   callableWatchdog)
-
+notifier.subscribe_to_all(callable_watchog)
 
 notifier.raise_event("onCreate", "onCreate", fileName="test_file.txt")
-notifier.raise_event("onOpen", "onOpen", openMode="w+", fileName="test_file.txt") 
+notifier.raise_event("onOpen", "onOpen", openMode="w+", fileName="test_file.txt")
 ```
+
+Console output:
+
 ```console
 Event onCreate at path some\path\here is called with following simple args: ['onCreate'] and with following keyword args: {'fileName': 'test_file.txt'}
 Event onOpen at path some\path\here is called with following simple args: ['onOpen'] and with following keyword args: {'openMode': 'w+', 'fileName': 'test_file.txt'}
