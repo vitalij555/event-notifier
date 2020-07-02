@@ -11,8 +11,6 @@ from EventNotifier.SubscriberManager import SubscriberManager
 
 class TestExamples:
     def test_subscribe_to_all(self):
-        # assert 0 == len(subscriber.subscribers)
-
         from EventNotifier import Notifier
         class CallableFileWatchdog:
             def __init__(self, pathToWatch):

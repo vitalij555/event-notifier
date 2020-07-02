@@ -37,6 +37,7 @@ jobs:
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        CODECOV_TOKEN: "26b7e6e5-a352-4ddf-bc3b-023387c19564"
       run: |
         python ./pypi/setup.py sdist bdist_wheel
         twine upload dist/*
