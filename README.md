@@ -19,9 +19,9 @@ Library providing event registration and routing infrastructure.
 
 ## Background
 
-This is implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just happen.
+This is implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just happened.
 
-Any python object inheriting from or containing notifier can act as event sender and any callable object can act as event receiver.
+Any python object inheriting from or containing a notifier can act as event sender and any callable object can act as event receiver.
 Allows to register receivers having variable number of arguments. 
 
 
