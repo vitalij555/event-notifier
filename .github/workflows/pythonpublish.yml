@@ -27,13 +27,22 @@ jobs:
         pip install --upgrade pip wheel
         pip install setuptools twine
     - name: Run tests
+      env:
+        CODECOV_TOKEN: "26b7e6e5-a352-4ddf-bc3b-023387c19564"
       run: |
         pip install pytest
         pip install pytest-cov
         pip install codecov
         cd test
-        pytest --cov=./
+        pytest --cov=../EventNotifier --cov-report=html
+        codecov -t "26b7e6e5-a352-4ddf-bc3b-023387c19564"
         cd ..
+    - name: Upload single file
+      run: echo "Hello World" > file.txt
+      uses: actions/upload-artifact@v1
+      with:
+        name: file
+        path: file.txt
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
@@ -42,3 +51,6 @@ jobs:
       run: |
         python ./pypi/setup.py sdist bdist_wheel
         twine upload dist/*
+
+
+
