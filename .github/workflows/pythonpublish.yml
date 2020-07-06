@@ -17,6 +17,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/upload-artifact@v1
     - name: Set up Python
       uses: actions/setup-python@v1
       with:
@@ -39,7 +40,6 @@ jobs:
         cd ..
     - name: Upload single file
       run: echo "Hello World" > file.txt
-      uses: actions/upload-artifact@v1
       with:
         name: file
         path: file.txt
