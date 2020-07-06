@@ -17,7 +17,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/upload-artifact@v1
     - name: Set up Python
       uses: actions/setup-python@v1
       with:
@@ -34,15 +33,18 @@ jobs:
         pip install pytest
         pip install pytest-cov
         pip install codecov
-        cd test
-        pytest --cov=../EventNotifier --cov-report=html
+        pytest --cov-report=html --cov-report=annotate --cov=./EventNotifier test
+        pwd
+        ls -la
         codecov -t "26b7e6e5-a352-4ddf-bc3b-023387c19564"
-        cd ..
-    - name: Upload single file
-      run: echo "Hello World" > file.txt
+    - uses: actions/upload-artifact@v2
       with:
-        name: file
-        path: file.txt
+        name: coverage.xml
+        path: /home/runner/work/event-notifier/event-notifier/test/coverage.xml
+    - uses: actions/upload-artifact@v2
+      with:
+        name: htmlcov
+        path: '/home/runner/work/event-notifier/**/*htmlcov*'
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
@@ -51,6 +53,3 @@ jobs:
       run: |
         python ./pypi/setup.py sdist bdist_wheel
         twine upload dist/*
-
-
-
