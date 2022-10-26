@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setup(
   name = 'event-notifier',         # How you named your package folder (MyLib)
   packages=setuptools.find_packages(),
-  version = '1.0.10',
+  version = '1.0.11',
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'Event notifier with many subscribers support',   # Give a short description about your library
   long_description=long_description,
@@ -31,5 +31,6 @@ setup(
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
   ],
 )
