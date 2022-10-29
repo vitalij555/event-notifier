@@ -174,7 +174,6 @@ Method allows to register one callable for all events supported by notifier.
 **Example**
 
 ```python
-def test_subscribe_to_all(self):
 from EventNotifier import Notifier
 class CallableFileWatchdog:
     def __init__(self, pathToWatch):
@@ -203,7 +202,7 @@ Event onOpen at path some\path\here is called with following simple args: ['onOp
 ```
 
 
-### get_supported_events():
+### get_registered_events():
 
 **Description**
 
