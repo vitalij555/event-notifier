@@ -9,7 +9,7 @@ Library providing event registration and routing infrastructure.
 
 - [Background](#background)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Example](#example)
 - [Constructor](#constructor)
 - [API Overview](#api-overview)
 - [Tests](#tests)
@@ -19,7 +19,7 @@ Library providing event registration and routing infrastructure.
 
 ## Background
 
-This is implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just happened.
+This is an implementation of event notifier (also known as emitter or dispatcher) allowing to notify one or more subscribers of an event that just occurred.
 
 Any python object inheriting from or containing a notifier can act as event sender and any callable object can act as event receiver.
 Allows to register receivers having variable number of arguments. 
@@ -32,12 +32,13 @@ pip install -U event-notifier
 ```
 
 
-## Usage
+## Example
 
 ```python
 from EventNotifier import Notifier
 
-
+# Imagine we have a piece of code which is interested in some events 
+# occurring in other pieces of the code...
 class FileWatchDog():
 	def onOpen(self, fileName, openMode):
 		print(f"File {fileName} opened with {openMode} mode")
@@ -49,9 +50,12 @@ class FileWatchDog():
 
 watchDog = FileWatchDog()	
 	
-	
+# Create Notifier object by providing a list of events other components might be interesting in	
 notifier = Notifier(["onCreate", "onOpen", "onModify", "onClose", "onDelete"])
 
+# From now other objects are able to subscribe to events we've declared above
+# Its important to use the same name as it was declared while creating Notifier object
+# Consider using constant declarations or enums in order to avoid typos here
 notifier.subscribe("onOpen",  watchDog.onOpen)
 notifier.subscribe("onClose", watchDog.onClose)
 
